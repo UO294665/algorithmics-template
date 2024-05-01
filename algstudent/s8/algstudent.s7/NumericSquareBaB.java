@@ -55,7 +55,7 @@ public class NumericSquareBaB {
 		for(int i = 0;i<10;i++) {
 			nextStates.add(new HeuristicState(board, 0, 0));
 		}
-		while(!nextStates.isEmpty()&&!isSolved) {
+		while(!nextStates.isEmpty() && !isSolved) {
 			HeuristicState currentState = nextStates.poll();
 			int[][] newBoard = currentState.getBoard();
 			int row = currentState.getRow();
