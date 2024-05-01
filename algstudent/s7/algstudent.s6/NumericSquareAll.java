@@ -1,5 +1,6 @@
 package src;
 
+import java.util.LinkedList;
 
 public class NumericSquareAll {
 	private static String filename = "C:/Users/gonza/Desktop/UNI/Algoritmia/LAB08/LAB08/Files/test00.txt";
@@ -9,6 +10,7 @@ public class NumericSquareAll {
 	private boolean [][] untouchables;
 	private boolean isSolved;
 	private int solutions=0;
+	private LinkedList<int [][]> solutionsReached = new LinkedList<int [][]>();
 	
 	public static char MULT='*';
 	public static char DIV='/';
@@ -45,7 +47,7 @@ public class NumericSquareAll {
 		return board;
 	}
 	
-	public int getSolutions() {
+	public int getNumberOfSolutions() {
 		return solutions;
 	}
 	
@@ -54,55 +56,69 @@ public class NumericSquareAll {
 	}
 
 	private void backtracking(int row, int col) {
+		
 		if(!untouchables[row][col]) {
-			for(int k = 0;k<10;k++) {
-				board[row][col]=k;
-
-				if(row == board.length-2 && col == board.length-2) {
-					if(isValidRow(row) && isValidCol(col)) {
-						isSolved = true;
-						solutions++;
-					}else if(k==9)
-						return;
+			for(int val = 0; val < 10; val ++) {
+				board[row][col] = val;
+				if(hasSolution()) {
+					isSolved = true;
+					saveState();
+					solutions++;
 				}
-				else if(row == board.length-2) {
-					if(isValidCol(col)) {
-						backtracking(row, col+1);
+				if(row == col && row == board.length-2)
+					continue;
+				else if(col == board.length - 2) {
+					if(isValidRow(row)) {
+						backtracking(row + 1, 0);
 					}
 				}
-				else if(isValidRow(row)) {
-					backtracking(row+1,0);
+				else if(row == board.length - 2) {
+					if(isValidCol(col)) {
+						backtracking(row, col + 1);
+					}
 				}
-				else if(col == board.length-2 && k == 9) {
-					return;
-				}else if(col != board.length-2) {
+				else {
 					backtracking(row, col+1);
 				}
 			}
-		}
-		else if(row == board.length-2 && col == board.length-2) {
-			if(isValidRow(row) && isValidCol(col)) {
-				isSolved = true;
-				solutions++;
-			}else
+		}else {
+			if(row == col && row == board.length-2)
 				return;
-		}
-		else if(row == board.length-2) {
-			if(isValidCol(col)) {
+			else if(col == board.length - 2) {
+				if(isValidRow(row)) {
+					backtracking(row + 1, 0);
+				}
+			}
+			else if(row == board.length - 2) {
+				if(isValidCol(col)) {
+					backtracking(row, col + 1);
+				}
+			}
+			else {
 				backtracking(row, col+1);
-			}else {
-				return;
 			}
 		}
-		else if(col == board.length-2) {
-			if(isValidRow(row)) {
-				backtracking(row+1, 0);
-			}else
-				return;
-		}else
-			backtracking(row,col+1);
 	}
 	
+	private boolean hasSolution() {
+		for(int i = 0; i<board.length-1;i++) {
+			if(!(isValidRow(i) && isValidCol(i))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private void saveState() {
+		int [][] copy = new int [board.length][board.length];
+		for (int i = 0; i < board.length - 1; i++) {
+			for(int j = 0; j<board.length-1; j++) {
+				copy[i][j] = board[i][j];
+			}
+        }
+		solutionsReached.add(copy);
+	}
+
 	public boolean isValidRow(int row) {
 		int rowOp = row * 2;
 		int first = board[row][0];
@@ -118,6 +134,9 @@ public class NumericSquareAll {
 			}
 			if(operators[rowOp][i-1] == DIV) {
 				if(board[row][i]==0) {
+					return false;
+				}
+				if(first%board[row][i] !=0) {
 					return false;
 				}
 				first /= board[row][i];
@@ -143,6 +162,9 @@ public class NumericSquareAll {
 			}
 			if(operators[aux][col] == DIV) {
 				if(board[i][col]==0) {
+					return false;
+				}
+				if(column%board[i][col] !=0) {
 					return false;
 				}
 				column /= board[i][col];
@@ -179,6 +201,28 @@ public class NumericSquareAll {
 			System.out.print(board[board.length-1][i]+ "  ");
 		}
 		System.out.println();
+	}
+	
+	public String[][] getSol() {
+		String [][] result = new String [board.length-1][board.length-1];
+		int [][] auxBoard = this.board;
+		if(isSolved)
+			auxBoard = solutionsReached.get(0);
+		for(int i =0;i<auxBoard.length-1;i++) {
+			for(int j = 0;j<auxBoard.length-1;j++) {
+				result[i][j] = Integer.toString(auxBoard[i][j]);
+			}
+		}
+		return result;
+	}
+	
+	private boolean canBeSolution(int row, int col) {
+		if(col == board.length - 2)
+			return isValidRow(row);
+		if(row == board.length - 2)
+			return isValidCol(col);
+		
+		return true;
 	}
 
 }
