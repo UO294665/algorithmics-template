@@ -10,7 +10,7 @@ public class Main {
 		NumericSquareBaB n = new NumericSquareBaB(p.getBoard(), p.getOperators(), p.getUntouchables());
 		
 		t1 = System.currentTimeMillis();
-		n.backtracking();
+		n.branchAndBound();
 		t2 = System.currentTimeMillis();
 		
 		System.out.println("For one solution: \n");

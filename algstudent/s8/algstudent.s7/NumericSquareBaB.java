@@ -51,7 +51,7 @@ public class NumericSquareBaB {
 		return numberOfDevelopedNodes;
 	}
 
-	public void backtracking() {
+	public void branchAndBound() {
 		for(int i = 0;i<10;i++) {
 			nextStates.add(new HeuristicState(board, 0, 0));
 		}
